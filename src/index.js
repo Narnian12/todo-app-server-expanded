@@ -8,7 +8,7 @@ const { SubscriptionServer } = require("subscriptions-transport-ws");
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 
 (async () => {
-  const PORT = 4000;
+  const PORT = process.env.PORT || 4000;
   const pubsub = new PubSub();
   const app = express();
   const httpServer = createServer(app);
@@ -103,12 +103,5 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
     { server: httpServer, path: server.graphqlPath }
   );
 
-  httpServer.listen(PORT, () => {
-    console.log(
-      `🚀 Query endpoint ready at http://localhost:${PORT}${server.graphqlPath}`
-    );
-    console.log(
-      `🚀 Subscription endpoint ready at ws://localhost:${PORT}${server.graphqlPath}`
-    );
-  });
+  httpServer.listen(PORT, () => {});
 })();
