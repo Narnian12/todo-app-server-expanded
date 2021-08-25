@@ -16,7 +16,7 @@
     "subscriptions-transport-ws": "^0.9.19"
   },
   "scripts": {
-    "start": "nodemon ./src/index.js"
+    "start": "node ./src/index.js"
   },
   "engines": {
     "node": "16.6.0"
