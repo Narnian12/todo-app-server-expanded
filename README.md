@@ -4,4 +4,5 @@ Server-side implementation of todo app using Apollo Server Express and Prisma OR
 
 ## Instructions to run
 * `npm install`
-* `npm start`
+* `tsc ./src/index.ts`
+* `node ./src/index.js`
