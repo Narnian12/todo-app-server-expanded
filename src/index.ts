@@ -59,20 +59,20 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
       getTodoList: () => context.prisma.todo.findMany()
     },
     Mutation: {
-      addTodo: (_, args, context) => {
+      addTodo: (_: any, args: { todo: TodoInput }, context: any ) => {
         let addTodo = context.prisma.todo.create({ data: { id: args.todo.id, name: args.todo.name, info: args.todo.info, editing: false }});
         pubsub.publish('TODO_CHANGED', { todoChanged : { type: 'ADD', data: addTodo } });
         return addTodo;
       },
-      setEditing: (_, args, context) => {
+      setEditing: (_: any, args: { id: string, editing: boolean }, context: any ) => {
         return context.prisma.todo.update({ where: { id: args.id }, data: { editing: args.editing }});
       },
-      updateTodo: (_, args, context) => {
+      updateTodo: (_: any, args : { todo: TodoInput }, context: any ) => {
         let updateTodo = context.prisma.todo.update({ where: { id: args.todo.id }, data: { id: args.todo.id, name: args.todo.name, info: args.todo.info, editing: false }});
         pubsub.publish('TODO_CHANGED', { todoChanged: { type: 'UPDATE', data: updateTodo } });
         return updateTodo;
       },
-      deleteTodo: (_, args) => {
+      deleteTodo: (_: any, args: { id: string }) => {
         let deleteTodo = context.prisma.todo.delete({ where: { id: args.id }});
         pubsub.publish('TODO_CHANGED', { todoChanged: { type: 'DELETE', data: deleteTodo } });
         return deleteTodo;
@@ -84,6 +84,12 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
       }
     }
   };
+
+  interface TodoInput {
+    id: string,
+    name: string,
+    info: string
+  }
 
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const prisma = new PrismaClient()
@@ -105,3 +111,5 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
 
   httpServer.listen(PORT, () => {});
 })();
+
+export {};
