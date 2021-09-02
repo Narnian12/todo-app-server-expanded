@@ -68,7 +68,9 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
         return context.prisma.todo.update({ where: { id: args.id }, data: { editing: args.editing }});
       },
       setComplete: (_: any, args: { id: string, complete: boolean }, context: any) => {
-        return context.prisma.todo.update({ where: { id: args.id }, data: { complete: args.complete }});
+        let setCompleteTodo = context.prisma.todo.update({ where: { id: args.id }, data: { complete: args.complete }});
+        pubsub.publish('TODO_CHANGED', { todoChanged: { type: 'COMPLETE', data: setCompleteTodo } });
+        return setCompleteTodo;
       },
       updateTodo: (_: any, args : { todo: TodoInput }, context: any) => {
         let updateTodo = context.prisma.todo.update({ where: { id: args.todo.id }, data: { id: args.todo.id, name: args.todo.name, editing: false, complete: false }});
@@ -83,6 +85,7 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
     },
     Subscription: {
       todoChanged: {
+        // Subscribe to all 'TODO_CHANGED' pubs
         subscribe: () => pubsub.asyncIterator(['TODO_CHANGED'])
       }
     }
