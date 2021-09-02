@@ -23,14 +23,13 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
     type Todo {
       id: String!,
       name: String!,
-      info: String,
-      editing: Boolean!
+      editing: Boolean!,
+      complete: Boolean!
     }
 
     input TodoInput {
       id: String!,
       name: String!,
-      info: String
     }
 
     type Subscription {
@@ -60,7 +59,7 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
     },
     Mutation: {
       addTodo: (_: any, args: { todo: TodoInput }, context: any ) => {
-        let addTodo = context.prisma.todo.create({ data: { id: args.todo.id, name: args.todo.name, info: args.todo.info, editing: false }});
+        let addTodo = context.prisma.todo.create({ data: { id: args.todo.id, name: args.todo.name, editing: false, complete: false }});
         pubsub.publish('TODO_CHANGED', { todoChanged : { type: 'ADD', data: addTodo } });
         return addTodo;
       },
@@ -68,7 +67,7 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
         return context.prisma.todo.update({ where: { id: args.id }, data: { editing: args.editing }});
       },
       updateTodo: (_: any, args : { todo: TodoInput }, context: any ) => {
-        let updateTodo = context.prisma.todo.update({ where: { id: args.todo.id }, data: { id: args.todo.id, name: args.todo.name, info: args.todo.info, editing: false }});
+        let updateTodo = context.prisma.todo.update({ where: { id: args.todo.id }, data: { id: args.todo.id, name: args.todo.name, editing: false, complete: false }});
         pubsub.publish('TODO_CHANGED', { todoChanged: { type: 'UPDATE', data: updateTodo } });
         return updateTodo;
       },
@@ -87,8 +86,7 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
 
   interface TodoInput {
     id: string,
-    name: string,
-    info: string
+    name: string
   }
 
   const schema = makeExecutableSchema({ typeDefs, resolvers });
